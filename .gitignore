@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.venv/
+
+# état et configuration locale (tests manuels)
+state.json
+state.json.corrupt
+*.env
+!conf/hetzner_watch.env
+
+# fichiers locaux de déploiement (clé, accès) : jamais versionnés
+.local/
+
+# réglages locaux de l'outil de dev
+.claude/

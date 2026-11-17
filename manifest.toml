@@ -1,0 +1,72 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/manifest.v2.schema.json
+
+packaging_format = 2
+
+id = "hetzner_watch"
+name = "Hetzner Watch"
+description.en = "Get a push notification as soon as a Hetzner Cloud server type is back in stock"
+description.fr = "Notification push dès qu'un type de serveur Hetzner Cloud redevient commandable"
+
+version = "1.0.0~ynh1"
+
+maintainers = ["Isilin"]
+
+[upstream]
+license = "MIT"
+code = "https://github.com/Isilin/hetzner_watch_ynh"
+
+[integration]
+yunohost = ">= 12.0.9"
+helpers_version = "2.1"
+architectures = "all"
+multi_instance = false
+ldap = "not_relevant"
+sso = "not_relevant"
+disk = "10M"
+ram.build = "10M"
+ram.runtime = "30M"
+
+# Démon sans interface web : ni domaine, ni chemin. Les réglages se changent dans le config panel.
+[install]
+    [install.hcloud_token]
+    ask.en = "Hetzner Cloud API token (read-only)"
+    ask.fr = "Token API Hetzner Cloud (lecture seule)"
+    help.en = "Hetzner console > project > Security > API tokens > Generate, permission « Read ». Preferably in a dedicated project: the 3600 requests/hour quota is per project."
+    help.fr = "Console Hetzner > projet > Sécurité > Tokens API > Générer, droits « Lecture ». De préférence dans un projet dédié : le quota de 3600 requêtes/h est partagé par projet."
+    type = "password"
+
+    [install.watch_types]
+    ask.en = "Server types to watch"
+    ask.fr = "Types de serveurs à surveiller"
+    type = "tags"
+    choices = ["cx23", "cx33", "cx43", "cx53", "cpx12", "cpx22", "cpx32", "cpx42", "cpx52", "cpx62", "cax11", "cax21", "cax31", "cax41", "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63"]
+    default = "cx43,cx33,cax31,cax21"
+
+    [install.watch_locations]
+    ask.en = "Locations to watch (empty = all)"
+    ask.fr = "Locations à surveiller (vide = toutes)"
+    help.en = "fsn1 Falkenstein, nbg1 Nuremberg, hel1 Helsinki, ash Ashburn, hil Hillsboro, sin Singapore"
+    help.fr = "fsn1 Falkenstein, nbg1 Nuremberg, hel1 Helsinki, ash Ashburn, hil Hillsboro, sin Singapour"
+    type = "tags"
+    choices = ["fsn1", "nbg1", "hel1", "ash", "hil", "sin"]
+    optional = true
+    default = ""
+
+    [install.ntfy_url]
+    ask.en = "ntfy topic URL"
+    ask.fr = "URL du topic ntfy"
+    help.en = "Notifications are pushed there with urgent priority. On ntfy.sh, use a long random topic name: anyone who knows it can read it."
+    help.fr = "Les alertes y sont publiées en priorité urgente. Sur ntfy.sh, choisir un nom de topic long et aléatoire : qui le connaît peut le lire."
+    type = "url"
+    example = "https://ntfy.sh/hetzner-watch-xxxxxxxxxxxx"
+
+[resources]
+    [resources.system_user]
+
+    [resources.install_dir]
+    dir = "/opt/yunohost/__APP__"
+
+    [resources.data_dir]
+    # state.json : dernière disponibilité connue (pas de nouvelle alerte au redémarrage)
+
+    [resources.permissions]

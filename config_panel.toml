@@ -1,0 +1,114 @@
+#:schema https://raw.githubusercontent.com/YunoHost/apps/main/schemas/config_panel.v1.schema.json
+
+version = "1.0"
+
+# Valeurs stockées dans les réglages de l'app ; scripts/config régénère hetzner_watch.env,
+# puis YunoHost redémarre le service (services ci-dessous).
+
+[main]
+name.en = "Configuration"
+name.fr = "Configuration"
+services = ["__APP__"]
+
+    [main.watch]
+    name.en = "What to watch"
+    name.fr = "Surveillance"
+    optional = false
+
+        [main.watch.watch_types]
+        ask.en = "Server types"
+        ask.fr = "Types de serveurs"
+        type = "tags"
+        choices = ["cx23", "cx33", "cx43", "cx53", "cpx12", "cpx22", "cpx32", "cpx42", "cpx52", "cpx62", "cax11", "cax21", "cax31", "cax41", "ccx13", "ccx23", "ccx33", "ccx43", "ccx53", "ccx63"]
+        help.en = "CX = shared x86 (cost optimized), CPX = shared x86 (regular), CAX = shared Arm, CCX = dedicated."
+        help.fr = "CX = x86 partagé (économique), CPX = x86 partagé (standard), CAX = Arm partagé, CCX = dédié."
+
+        [main.watch.watch_locations]
+        ask.en = "Locations (empty = all)"
+        ask.fr = "Locations (vide = toutes)"
+        type = "tags"
+        choices = ["fsn1", "nbg1", "hel1", "ash", "hil", "sin"]
+        optional = true
+        help.en = "fsn1 Falkenstein, nbg1 Nuremberg, hel1 Helsinki, ash Ashburn, hil Hillsboro, sin Singapore"
+        help.fr = "fsn1 Falkenstein, nbg1 Nuremberg, hel1 Helsinki, ash Ashburn, hil Hillsboro, sin Singapour"
+
+        [main.watch.interval]
+        ask.en = "Check interval (seconds)"
+        ask.fr = "Intervalle entre deux vérifications (secondes)"
+        type = "number"
+        min = 10
+        max = 3600
+        help.en = "30 s = 120 requests/hour, out of a 3600/hour quota per Hetzner project."
+        help.fr = "30 s = 120 requêtes/h, pour un quota de 3600/h par projet Hetzner."
+
+        [main.watch.notify_unavailable]
+        ask.en = "Also notify when a type becomes unavailable again"
+        ask.fr = "Notifier aussi quand un type redevient indisponible"
+        type = "boolean"
+
+        [main.watch.notify_cooldown]
+        ask.en = "Minimum delay between two alerts for the same type and location (seconds)"
+        ask.fr = "Délai minimum entre deux alertes pour un même type et une même location (secondes)"
+        type = "number"
+        min = 0
+        max = 86400
+        help.en = "Avoids a burst of alerts when availability flickers. 0 = no limit."
+        help.fr = "Évite une rafale d'alertes quand la disponibilité clignote. 0 = pas de limite."
+
+    [main.notify]
+    name.en = "Notifications"
+    name.fr = "Notifications"
+
+        [main.notify.ntfy_url]
+        ask.en = "ntfy topic URL"
+        ask.fr = "URL du topic ntfy"
+        type = "url"
+        optional = true
+        example = "https://ntfy.sh/hetzner-watch-xxxxxxxxxxxx"
+
+        [main.notify.ntfy_token]
+        ask.en = "ntfy access token (optional)"
+        ask.fr = "Token d'accès ntfy (facultatif)"
+        type = "password"
+        optional = true
+        help.en = "Leave empty to keep the current value; type - to remove it."
+        help.fr = "Laisser vide pour garder la valeur actuelle ; taper - pour l'effacer."
+
+        [main.notify.discord_webhook]
+        ask.en = "Discord webhook URL (optional)"
+        ask.fr = "URL du webhook Discord (facultatif)"
+        type = "password"
+        optional = true
+        help.en = "Leave empty to keep the current value; type - to remove it."
+        help.fr = "Laisser vide pour garder la valeur actuelle ; taper - pour l'effacer."
+
+    [main.heartbeat]
+    name.en = "Heartbeat"
+    name.fr = "Heartbeat"
+
+        [main.heartbeat.heartbeat_url]
+        ask.en = "Ping URL (healthchecks.io or similar)"
+        ask.fr = "URL de ping (healthchecks.io ou équivalent)"
+        type = "url"
+        optional = true
+        help.en = "Pinged after each successful check (at most once per interval below), /fail on a fatal error. The service alerts you when pings stop."
+        help.fr = "Pinguée après chaque vérification réussie (au plus une fois par intervalle ci-dessous), /fail sur erreur fatale. Le service t'alerte quand les pings cessent."
+
+        [main.heartbeat.heartbeat_interval]
+        ask.en = "Minimum delay between two pings (seconds)"
+        ask.fr = "Délai minimum entre deux pings (secondes)"
+        type = "number"
+        min = 10
+        max = 86400
+
+    [main.api]
+    name.en = "Hetzner API"
+    name.fr = "API Hetzner"
+
+        [main.api.hcloud_token]
+        ask.en = "Hetzner Cloud API token (read-only)"
+        ask.fr = "Token API Hetzner Cloud (lecture seule)"
+        type = "password"
+        optional = true
+        help.en = "Leave empty to keep the current token."
+        help.fr = "Laisser vide pour garder le token actuel."

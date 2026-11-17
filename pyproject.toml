@@ -1,0 +1,51 @@
+# Le code est déployé tel quel par le paquet YunoHost (scripts/), sans dépendance.
+# Ce fichier décrit le projet (installation locale possible : pip install -e ".[dev]")
+# et configure les outils de développement.
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hetzner-watch"
+description = "Notifie dès qu'un type de serveur Hetzner Cloud redevient commandable"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = []
+dynamic = ["version"]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff", "mypy"]
+
+[project.scripts]
+hetzner-watch = "hetzner_watch.cli:main"
+
+[tool.setuptools.dynamic]
+version = { attr = "hetzner_watch.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["sources"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["sources"]
+addopts = "-q"
+log_level = "INFO"
+
+[tool.ruff]
+target-version = "py39"
+line-length = 120
+src = ["sources", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["hetzner_watch"]
+
+[tool.mypy]
+# mypy ne sait plus cibler 3.9 : la compatibilité 3.9 est garantie par ruff (py39) et pytest en CI
+python_version = "3.10"
+strict = true
+files = ["sources/hetzner_watch"]

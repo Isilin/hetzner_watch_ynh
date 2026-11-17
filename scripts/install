@@ -1,0 +1,31 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+# Les réponses de type password ne sont pas enregistrées automatiquement dans les réglages
+ynh_app_setting_set --key=hcloud_token --value="$hcloud_token"
+
+_hw_default_settings
+
+ynh_script_progression "Installing source files..."
+
+_hw_setup_source
+
+ynh_script_progression "Adding $app's configuration files..."
+
+_hw_add_config
+
+ynh_script_progression "Adding system configurations related to $app..."
+
+ynh_config_add_systemd
+
+_hw_service_add
+
+_hw_set_logo
+
+ynh_script_progression "Starting $app's systemd service..."
+
+ynh_systemctl --service="$app" --action="start" --log_path="systemd" --wait_until="Surveillance de"
+
+ynh_script_progression "Installation of $app completed"

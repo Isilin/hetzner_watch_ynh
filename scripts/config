@@ -1,0 +1,51 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+ynh_abort_if_errors
+
+#=================================================
+# SECRETS (champs password) : vide = garder la valeur, "-" = effacer
+#=================================================
+
+_hw_set_secret() {
+    local key="$1" value="$2"
+    if [ "$value" = "-" ]; then
+        ynh_app_setting_set --key="$key" --value=""
+    elif [ -n "$value" ]; then
+        ynh_app_setting_set --key="$key" --value="$value"
+    fi
+}
+
+set__hcloud_token() {
+    _hw_set_secret hcloud_token "$hcloud_token"
+}
+
+set__ntfy_token() {
+    _hw_set_secret ntfy_token "$ntfy_token"
+}
+
+set__discord_webhook() {
+    _hw_set_secret discord_webhook "$discord_webhook"
+}
+
+#=================================================
+# VALIDATION
+#=================================================
+
+validate__watch_types() {
+    [ -n "$watch_types" ] || echo "Choisir au moins un type de serveur"
+}
+
+#=================================================
+# APPLICATION : réglages enregistrés, puis hetzner_watch.env régénéré.
+# YunoHost redémarre ensuite le service (services = ["__APP__"] dans config_panel.toml).
+#=================================================
+
+ynh_app_config_apply() {
+    _ynh_app_config_apply
+    _hw_add_config
+}
+
+ynh_app_config_run "$1"

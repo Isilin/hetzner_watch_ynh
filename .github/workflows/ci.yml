@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 3.9 = plancher supporté, 3.11 = Debian 12 (YunoHost 12, la Pi), 3.13 = Debian 13 (YunoHost 13)
+        python: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install pytest
+      - run: pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install ruff mypy
+      - run: ruff check sources tests tools
+      - run: ruff format --check sources tests tools
+      - run: mypy
+      - name: shellcheck (scripts YunoHost)
+        # SC1091 : helpers YunoHost absents ici ; SC2154 : variables fournies par YunoHost
+        run: shellcheck -s bash -e SC1091,SC2154 scripts/*
+      - name: shellcheck (commande installée)
+        run: shellcheck -s sh conf/hetzner_watch.sh
