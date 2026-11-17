@@ -7,12 +7,17 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        # 3.9 = plancher supporté, 3.11 = Debian 12 (YunoHost 12, la Pi), 3.13 = Debian 13 (YunoHost 13)
-        python: ["3.9", "3.11", "3.13"]
+        # 3.11 = Debian 12 (YunoHost 12, la Pi), 3.13 = Debian 13 (YunoHost 13)
+        python: ["3.11", "3.13"]
+        os: [ubuntu-latest]
+        include:
+          # 3.9 = plancher supporté ; plus de build 3.9 pour Ubuntu 26.04 (ubuntu-latest)
+          - python: "3.9"
+            os: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
